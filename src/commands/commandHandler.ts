@@ -25,9 +25,9 @@ export class CommandHandler {
                 const dadJoke = await this.getDadJoke();
                 if (dadJoke) await interaction.reply(dadJoke);
                 else
-                    // await interaction.reply(
-                    //     `An error occurred while retrieving a Dad Joke from the Dad-A-Base.`
-                    // );
+                    await interaction.reply(
+                        `An error occurred while retrieving a Dad Joke from the Dad-A-Base.`
+                    );
                 break;
             }
         }
