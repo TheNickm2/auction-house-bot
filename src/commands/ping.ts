@@ -1,11 +1,12 @@
-import { SlashCommandBuilder } from "@discordjs/builders";
-import { CommandInteraction } from "discord.js";
+import { SlashCommandBuilder } from '@discordjs/builders';
+import { CommandInteraction } from 'discord.js';
+import { Command } from './command';
 
-module.exports = {
-    data: new SlashCommandBuilder()
-        .setName("ping")
-        .setDescription("Goes Pong!"),
-    async execute(interaction: CommandInteraction) {
-        await interaction.reply("Pong!");
-    },
-};
+export class CommandPing implements Command {
+    public readonly data = new SlashCommandBuilder()
+        .setName('ping')
+        .setDescription('Goes pong!');
+    public async execute(interaction: CommandInteraction) {
+        await interaction.reply('Pong!');
+    }
+}

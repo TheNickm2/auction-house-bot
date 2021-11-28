@@ -1,8 +1,8 @@
-import { Client, Intents, Collection } from "discord.js";
-import { REST } from "@discordjs/rest";
-import { Routes } from "discord-api-types/v9";
-import * as DotEnv from "dotenv";
-import * as fs from "fs";
+import { Client, Intents, Collection } from 'discord.js';
+import { REST } from '@discordjs/rest';
+import { Routes } from 'discord-api-types/v9';
+import * as DotEnv from 'dotenv';
+import Commands from './commands'; 
 
 // Initialize DotEnv config
 DotEnv.config();
@@ -21,22 +21,18 @@ if (!botToken || !guildId || !applicationId) {
 
 // Load commands from files in commands folder
 const commands = new Collection<string, any>();
-const commandFiles = fs
-    .readdirSync("src/commands")
-    .filter((file) => file.endsWith(".ts"));
-
-for (const file of commandFiles) {
-    const command = require(`./commands/${file}`);
-    commands.set(command!.data!.name!, command);
-}
+for (const cmd of Commands) {
+    const command = new cmd();
+    commands.set(command.data.name, command);
+} 
 
 // Create REST instance to hit the Discord API
-const rest = new REST({ version: "9" }).setToken(botToken);
+const rest = new REST({ version: '9' }).setToken(botToken);
 
 // Register slash commands with Discord API
 (async () => {
     try {
-        console.log("Started refreshing application (/) commands.");
+        console.log('Started refreshing application (/) commands.');
 
         await rest.put(
             Routes.applicationGuildCommands(applicationId, guildId),
@@ -45,7 +41,7 @@ const rest = new REST({ version: "9" }).setToken(botToken);
             }
         );
 
-        console.log("Successfully reloaded application (/) commands.");
+        console.log('Successfully reloaded application (/) commands.');
     } catch (error) {
         console.error(error);
     }
@@ -62,29 +58,33 @@ const client = new Client({
 });
 
 // Notify when bot is connected
-client.on("ready", () => {
+client.on('ready', () => {
     console.log(
         `Logged in as ${
             client.user && client.user.tag
                 ? client.user.tag
-                : "an unidentifiable bot user"
+                : 'an unidentifiable bot user'
         }!`
     );
 });
 
 // Process command interactions with the CommandHandler
-client.on("interactionCreate", async (interaction) => {
-    if (!interaction.isCommand()) return;
-    const command = commands.get(interaction.commandName);
-    if (!command) return;
-    try {
-        await command.execute(interaction);
-    } catch (error) {
-        console.error(error);
-        await interaction.reply({
-            content: "An error occurred while executing this command.",
-            ephemeral: true,
-        });
+client.on('interactionCreate', async (interaction) => {
+    if (interaction.isCommand()) {
+        const command = commands.get(interaction.commandName);
+        if (!command) return;
+        try {
+            await command.execute(interaction);
+        } catch (error) {
+            console.error(error);
+            await interaction.reply({
+                content: 'An error occurred while executing this command.',
+                ephemeral: true,
+            });
+        }
+    }
+    else if (interaction.isButton()) {
+        
     }
 });
 
