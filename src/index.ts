@@ -1,7 +1,8 @@
-import { Client, Intents } from "discord.js";
+import { Client, Intents, Collection } from "discord.js";
 import { REST } from "@discordjs/rest";
 import { Routes } from "discord-api-types/v9";
 import * as DotEnv from "dotenv";
+import * as fs from "fs";
 
 // Initialize DotEnv config
 DotEnv.config();
@@ -18,8 +19,16 @@ if (!botToken || !guildId || !applicationId) {
     );
 }
 
-// Map commands as JSON
-const commands = {};// CommandsList.map((command) => command.toJSON());
+// Load commands from files in commands folder
+const commands = new Collection<string, any>();
+const commandFiles = fs
+    .readdirSync("src/commands")
+    .filter((file) => file.endsWith(".ts"));
+
+for (const file of commandFiles) {
+    const command = require(`./commands/${file}`);
+    commands.set(command!.data!.name!, command);
+}
 
 // Create REST instance to hit the Discord API
 const rest = new REST({ version: "9" }).setToken(botToken);
@@ -32,7 +41,7 @@ const rest = new REST({ version: "9" }).setToken(botToken);
         await rest.put(
             Routes.applicationGuildCommands(applicationId, guildId),
             {
-                body: commands,
+                body: commands.map((command) => command.data.toJSON()),
             }
         );
 
@@ -66,7 +75,17 @@ client.on("ready", () => {
 // Process command interactions with the CommandHandler
 client.on("interactionCreate", async (interaction) => {
     if (!interaction.isCommand()) return;
-    // handle the interaction
+    const command = commands.get(interaction.commandName);
+    if (!command) return;
+    try {
+        await command.execute(interaction);
+    } catch (error) {
+        console.error(error);
+        await interaction.reply({
+            content: "An error occurred while executing this command.",
+            ephemeral: true,
+        });
+    }
 });
 
 // Connect to Discord
