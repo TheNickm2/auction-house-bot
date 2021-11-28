@@ -2,8 +2,6 @@ import { Client, Intents } from "discord.js";
 import { REST } from "@discordjs/rest";
 import { Routes } from "discord-api-types/v9";
 import * as DotEnv from "dotenv";
-import { CommandsList } from "./commands/commands";
-import { CommandHandler } from "./commands/commandHandler";
 
 // Initialize DotEnv config
 DotEnv.config();
@@ -21,7 +19,7 @@ if (!botToken || !guildId || !applicationId) {
 }
 
 // Map commands as JSON
-const commands = CommandsList.map((command) => command.toJSON());
+const commands = {};// CommandsList.map((command) => command.toJSON());
 
 // Create REST instance to hit the Discord API
 const rest = new REST({ version: "9" }).setToken(botToken);
@@ -68,7 +66,7 @@ client.on("ready", () => {
 // Process command interactions with the CommandHandler
 client.on("interactionCreate", async (interaction) => {
     if (!interaction.isCommand()) return;
-    CommandHandler.handleCommand(interaction);
+    // handle the interaction
 });
 
 // Connect to Discord
