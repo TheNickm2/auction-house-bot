@@ -2,7 +2,11 @@ import { Client, Intents, Collection } from 'discord.js';
 import { REST } from '@discordjs/rest';
 import { Routes } from 'discord-api-types/v9';
 import * as DotEnv from 'dotenv';
-import Commands from './commands'; 
+import Commands from './commands';
+import { EventEmitter } from 'events';
+
+// Initialize EventEmitter
+const emitter = new EventEmitter();
 
 // Initialize DotEnv config
 DotEnv.config();
@@ -22,9 +26,9 @@ if (!botToken || !guildId || !applicationId) {
 // Load commands from files in commands folder
 const commands = new Collection<string, any>();
 for (const cmd of Commands) {
-    const command = new cmd();
+    const command = new cmd(emitter);
     commands.set(command.data.name, command);
-} 
+}
 
 // Create REST instance to hit the Discord API
 const rest = new REST({ version: '9' }).setToken(botToken);
@@ -82,9 +86,8 @@ client.on('interactionCreate', async (interaction) => {
                 ephemeral: true,
             });
         }
-    }
-    else if (interaction.isButton()) {
-        
+    } else if (interaction.isButton()) {
+        emitter.emit(interaction.customId, interaction);
     }
 });
 

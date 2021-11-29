@@ -2,6 +2,7 @@ import { SlashCommandBuilder } from '@discordjs/builders';
 import { CommandInteraction } from 'discord.js';
 import axios, { AxiosInstance } from 'axios';
 import { Command } from './command';
+import { EventEmitter } from 'events';
 
 export class CommandDadJoke implements Command {
     public readonly data = new SlashCommandBuilder()
@@ -20,6 +21,7 @@ export class CommandDadJoke implements Command {
         }
         return null;
     }
+    constructor(emitter: EventEmitter) {}
     async getDadJoke() {
         try {
             const response = await axios({
