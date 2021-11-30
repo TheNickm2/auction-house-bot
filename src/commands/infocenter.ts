@@ -36,18 +36,18 @@ export class CommandInfoCenter implements Command {
                 new MessageButton()
                     .setCustomId('infoTopSalesAHC')
                     .setLabel('Top Sales [AHC]')
-                    .setStyle('SECONDARY')
-                    .setEmoji('823009166347862056'),
+                    .setStyle('PRIMARY')
+                    .setEmoji('816522754529689651'),
                 new MessageButton()
                     .setCustomId('infoTopSalesAHA')
                     .setLabel('Top Sales [AHA]')
-                    .setStyle('SECONDARY')
-                    .setEmoji('823009166079688764')
+                    .setStyle('PRIMARY')
+                    .setEmoji('816522229293776976')
             ),
             new MessageActionRow().addComponents(
                 new MessageButton()
-                    .setCustomId('infoCheckMyReqs')
-                    .setLabel('Check My Reqs')
+                    .setCustomId('infoRafflesAHC')
+                    .setLabel('AHC Gold Raffles')
                     .setStyle('SECONDARY')
             ),
         ];
@@ -58,14 +58,22 @@ export class CommandInfoCenter implements Command {
             new MessageEmbed()
                 .setColor('#4e0891')
                 .setTitle('AHF Info Center')
-                .setURL('https://t.co/XgzApQrxzn')
+                .setURL(
+                    process.env.EMBED_AUTHOR_LINK
+                        ? process.env.EMBED_AUTHOR_LINK
+                        : ''
+                )
                 .setAuthor(
                     'AHF Info Center',
-                    'https://cdn.discordapp.com/icons/212818960280715265/a_fddb37206082b7da35b040cc9eebb99d.gif?size=4096',
-                    'https://t.co/XgzApQrxzn'
+                    process.env.EMBED_AUTHOR_ICON
+                        ? process.env.EMBED_AUTHOR_ICON
+                        : null,
+                    process.env.EMBED_AUTHOR_LINK
+                        ? process.env.EMBED_AUTHOR_LINK
+                        : ''
                 )
                 .setDescription(
-                    'Click the buttons below to navigate the AHF Info Center right here within Discord (or click "AHF Info Center" above to open the full info center in your web browser!)\nThe AHF Info Center is updated at least once daily, but may not always show real-time data.'
+                    'Click the buttons below to navigate the AHF Info Center right here within Discord (or click "AHF Info Center" above to open the full info center in your web browser!)\n\nThe AHF Info Center is typically updated at least once daily, but may not always show real-time data.'
                 )
                 .setTimestamp()
         );
@@ -73,22 +81,51 @@ export class CommandInfoCenter implements Command {
             'AHC Top Sellers',
             new MessageEmbed()
                 .setColor('#4e0891')
-                .setTitle('AHC Top Sellers <:AHC2:823009166347862056>')
+                .setTitle('AHC Top Sellers')
                 .setAuthor(
                     'AHF Info Center',
-                    'https://cdn.discordapp.com/icons/212818960280715265/a_fddb37206082b7da35b040cc9eebb99d.gif?size=4096',
-                    'https://t.co/XgzApQrxzn'
+                    process.env.EMBED_AUTHOR_ICON
+                        ? process.env.EMBED_AUTHOR_ICON
+                        : null,
+                    process.env.EMBED_AUTHOR_LINK
+                        ? process.env.EMBED_AUTHOR_LINK
+                        : ''
+                )
+                .setThumbnail(
+                    'https://cdn.discordapp.com/emojis/816522754529689651.png?size=4096'
                 )
         );
         this.colEmbeds.set(
             'AHA Top Sellers',
             new MessageEmbed()
                 .setColor('#4e0891')
-                .setTitle('AHA Top Sellers <:AHA2:823009166079688764>')
+                .setTitle('AHA Top Sellers')
                 .setAuthor(
                     'AHF Info Center',
-                    'https://cdn.discordapp.com/icons/212818960280715265/a_fddb37206082b7da35b040cc9eebb99d.gif?size=4096',
-                    'https://t.co/XgzApQrxzn'
+                    process.env.EMBED_AUTHOR_ICON
+                        ? process.env.EMBED_AUTHOR_ICON
+                        : null,
+                    process.env.EMBED_AUTHOR_LINK
+                        ? process.env.EMBED_AUTHOR_LINK
+                        : ''
+                )
+                .setThumbnail(
+                    'https://cdn.discordapp.com/emojis/816522229293776976.png?size=4096'
+                )
+        );
+        this.colEmbeds.set(
+            'AHC Gold Raffle',
+            new MessageEmbed()
+                .setColor('#4e0891')
+                .setTitle('AHC Gold Raffle Status')
+                .setAuthor(
+                    'AHF Info Center',
+                    process.env.EMBED_AUTHOR_ICON
+                        ? process.env.EMBED_AUTHOR_ICON
+                        : null,
+                    process.env.EMBED_AUTHOR_LINK
+                        ? process.env.EMBED_AUTHOR_LINK
+                        : ''
                 )
         );
 
@@ -99,12 +136,11 @@ export class CommandInfoCenter implements Command {
                 if (!sheetId)
                     return await interaction.reply({
                         content:
-                            'An error occurred while loading the top sellers. Please try again later.',
+                            'An error ocurred while loading data from the Info Center. Please try again later.',
                         ephemeral: true,
                     });
                 await interaction.deferReply();
                 const embed = this.colEmbeds.get('AHC Top Sellers');
-                embed.spliceFields(0, embed.fields.length);
                 const sheetHelper = new GoogleSheetsHelper(sheetId);
                 const sheet = await sheetHelper.loadSheet('Sales info');
                 if (sheet) {
@@ -122,20 +158,19 @@ export class CommandInfoCenter implements Command {
                         } else {
                             await interaction.editReply({
                                 content:
-                                    'An error occurred while loading the top sellers. Please try again later.',
+                                    'An error ocurred while loading data from the Info Center. Please try again later.',
                             });
                             return;
                         }
                     }
                     let sellers = '';
-                    let amounts = '';
                     topSellers.forEach((amount, sellerName) => {
-                        sellers += `${sellerName}\n`;
-                        amounts += `${amount.toLocaleString('en-US')}\n`;
+                        sellers += `${sellerName} (${amount.toLocaleString(
+                            'en-US'
+                        )})\n`;
                     });
                     embed
-                        .addField('Seller Name', sellers, true)
-                        .addField('Amount Sold', amounts, true)
+                        .addField('Seller Name (Amount Sold)', sellers, true)
                         .setFooter(
                             `Requested by @${interaction.user.username}#${interaction.user.discriminator}`
                         )
@@ -146,7 +181,7 @@ export class CommandInfoCenter implements Command {
                 } else {
                     await interaction.editReply({
                         content:
-                            'An error occurred while loading the top sellers. Please try again later.',
+                            'An error ocurred while loading data from the Info Center. Please try again later.',
                     });
                 }
             }
@@ -159,12 +194,11 @@ export class CommandInfoCenter implements Command {
                 if (!sheetId)
                     return await interaction.reply({
                         content:
-                            'An error occurred while loading the top sellers. Please try again later.',
+                            'An error ocurred while loading data from the Info Center. Please try again later.',
                         ephemeral: true,
                     });
                 await interaction.deferReply();
                 const embed = this.colEmbeds.get('AHA Top Sellers');
-                embed.spliceFields(0, embed.fields.length);
                 const sheetHelper = new GoogleSheetsHelper(sheetId);
                 const sheet = await sheetHelper.loadSheet('Sales info');
                 if (sheet) {
@@ -182,20 +216,19 @@ export class CommandInfoCenter implements Command {
                         } else {
                             await interaction.editReply({
                                 content:
-                                    'An error occurred while loading the top sellers. Please try again later.'
+                                    'An error ocurred while loading data from the Info Center. Please try again later.',
                             });
                             return;
                         }
                     }
                     let sellers = '';
-                    let amounts = '';
                     topSellers.forEach((amount, sellerName) => {
-                        sellers += `${sellerName}\n`;
-                        amounts += `${amount.toLocaleString('en-US')}\n`;
+                        sellers += `${sellerName} (${amount.toLocaleString(
+                            'en-US'
+                        )})\n`;
                     });
                     embed
-                        .addField('Seller Name', sellers, true)
-                        .addField('Amount Sold', amounts, true)
+                        .addField('Seller Name (Amount Sold)', sellers, true)
                         .setFooter(
                             `Requested by @${interaction.user.username}#${interaction.user.discriminator}`
                         )
@@ -206,10 +239,61 @@ export class CommandInfoCenter implements Command {
                 } else {
                     await interaction.editReply({
                         content:
-                            'An error occurred while loading the top sellers. Please try again later.',
+                            'An error ocurred while loading data from the Info Center. Please try again later.',
                     });
                 }
             }
         );
+
+        emitter.on('infoRafflesAHC', async (interaction: ButtonInteraction) => {
+            const sheetId = process.env.GOOGLE_SPREADSHEET_ID;
+            if (!sheetId)
+                return await interaction.reply({
+                    content:
+                        'An error ocurred while loading data from the Info Center. Please try again later.',
+                    ephemeral: true,
+                });
+            await interaction.deferReply();
+            const embed = this.colEmbeds.get('AHC Gold Raffle');
+            const sheetHelper = new GoogleSheetsHelper(sheetId);
+            const sheet = await sheetHelper.loadSheet('Gold Raffle');
+            if (!sheet) {
+                return await interaction.editReply({
+                    content:
+                        'An error ocurred while loading data from the Info Center. Please try again later.',
+                });
+            }
+            await sheet.loadCells('O3:S8');
+            const raffleAmountHighroller = await sheet
+                .getCellByA1('S5')
+                .value.toLocaleString('en-US');
+            const raffleAmountFirst = await sheet
+                .getCellByA1('Q6')
+                .value.toLocaleString('en-US');
+            const raffleAmountSecond = await sheet
+                .getCellByA1('Q7')
+                .value.toLocaleString('en-US');
+            const raffleAmountThird = await sheet
+                .getCellByA1('Q8')
+                .value.toLocaleString('en-US');
+            const raffleTotalPrizes = await sheet
+                .getCellByA1('Q3')
+                .value.toLocaleString('en-US');
+            const rafflePlayers = await sheet
+                .getCellByA1('S3')
+                .value.toString();
+            embed
+                .setDescription(
+                    `AHC has two gold raffles - standard and highroller. The standard raffle tickets are 5,000 gold each and the highroller raffle tickets are 50,000 gold each. Gold can be deposited directly to the AHC guild bank to participate.`
+                )
+                .addField('Total Value of All Prizes', raffleTotalPrizes, true)
+                .addField('Total Players with Tickets', rafflePlayers, true)
+                .addField(
+                    'Individual Raffle Pot Values',
+                    `Highroller: ${raffleAmountHighroller}\n1st Place: ${raffleAmountFirst}\n2nd Place: ${raffleAmountSecond}\n3rd Place: ${raffleAmountThird}`,
+                    false
+                );
+            await interaction.editReply({ embeds: [embed] });
+        });
     }
 }
