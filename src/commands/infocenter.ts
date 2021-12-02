@@ -263,24 +263,24 @@ export class CommandInfoCenter implements Command {
                         'An error ocurred while loading data from the Info Center. Please try again later.',
                 });
             }
-            await sheet.loadCells('O3:S8');
+            await sheet.loadCells('O2:R15');
             const raffleAmountHighroller = await sheet
-                .getCellByA1('S5')
+                .getCellByA1('R9')
                 .value.toLocaleString('en-US');
             const raffleAmountFirst = await sheet
-                .getCellByA1('Q6')
+                .getCellByA1('R6')
                 .value.toLocaleString('en-US');
             const raffleAmountSecond = await sheet
-                .getCellByA1('Q7')
+                .getCellByA1('R7')
                 .value.toLocaleString('en-US');
             const raffleAmountThird = await sheet
-                .getCellByA1('Q8')
+                .getCellByA1('R8')
                 .value.toLocaleString('en-US');
             const raffleTotalPrizes = await sheet
-                .getCellByA1('Q3')
+                .getCellByA1('P3')
                 .value.toLocaleString('en-US');
             const rafflePlayers = await sheet
-                .getCellByA1('S3')
+                .getCellByA1('R3')
                 .value.toString();
             embed
                 .setDescription(
