@@ -7,6 +7,9 @@
     "author": "Nick Mykkanen <th3nickm2@gmail.com>",
     "license": "MIT",
     "private": true,
+    "engines": {
+        "node": "16.x"
+    },
     "devDependencies": {
         "@discordjs/rest": "^0.1.0-canary.0",
         "@types/google-spreadsheet": "^3.1.5",
