@@ -3,6 +3,7 @@ import {
     ButtonInteraction,
     Collection,
     CommandInteraction,
+    GuildMember,
     MessageActionRow,
     MessageButton,
     MessageEmbed,
@@ -10,7 +11,10 @@ import {
 import { Command } from './command';
 import { EventEmitter } from 'events';
 import GoogleSheetsHelper from '../helpers/googlesheets';
-
+import { GoogleSpreadsheetRow } from 'google-spreadsheet';
+import AhfSheetFunctions from '../helpers/ahfsheetfunctions';
+import IAhcGuildMember from '../interfaces/IAhcGuildMember';
+import IAhaGuildMember from '../interfaces/IAhaGuildMember';
 export class CommandInfoCenter implements Command {
     public readonly data = new SlashCommandBuilder()
         .setName('infocenter')
@@ -46,9 +50,22 @@ export class CommandInfoCenter implements Command {
             ),
             new MessageActionRow().addComponents(
                 new MessageButton()
+                    .setCustomId('infoAHCReqsCheck')
+                    .setLabel('Check My Status [AHC]')
+                    .setStyle('SUCCESS')
+                    .setEmoji('816522754529689651'),
+                new MessageButton()
+                    .setCustomId('infoAHAReqsCheck')
+                    .setLabel('Check My Status [AHA]')
+                    .setStyle('SUCCESS')
+                    .setEmoji('816522229293776976')
+            ),
+            new MessageActionRow().addComponents(
+                new MessageButton()
                     .setCustomId('infoRafflesAHC')
                     .setLabel('AHC Gold Raffles')
                     .setStyle('SECONDARY')
+                    .setEmoji('853692688549412904')
             ),
         ];
 
@@ -128,47 +145,50 @@ export class CommandInfoCenter implements Command {
                         : ''
                 )
         );
+        this.colEmbeds.set(
+            'My AHC Status',
+            new MessageEmbed()
+                .setColor('#4e0891')
+                .setTitle('Your AHC Guild Status')
+                .setAuthor(
+                    'AHF Info Center',
+                    process.env.EMBED_AUTHOR_ICON
+                        ? process.env.EMBED_AUTHOR_ICON
+                        : null,
+                    process.env.EMBED_AUTHOR_LINK
+                        ? process.env.EMBED_AUTHOR_LINK
+                        : ''
+                )
+        );
+        this.colEmbeds.set(
+            'My AHA Status',
+            new MessageEmbed()
+                .setColor('#4e0891')
+                .setTitle('Your AHA Guild Status')
+                .setAuthor(
+                    'AHF Info Center',
+                    process.env.EMBED_AUTHOR_ICON
+                        ? process.env.EMBED_AUTHOR_ICON
+                        : null,
+                    process.env.EMBED_AUTHOR_LINK
+                        ? process.env.EMBED_AUTHOR_LINK
+                        : ''
+                )
+        );
 
         emitter.on(
             'infoTopSalesAHC',
             async (interaction: ButtonInteraction) => {
-                const sheetId = process.env.GOOGLE_SPREADSHEET_ID;
-                if (!sheetId)
-                    return await interaction.reply({
-                        content:
-                            'An error ocurred while loading data from the Info Center. Please try again later.',
-                        ephemeral: true,
-                    });
                 await interaction.deferReply();
-                const embed = this.colEmbeds.get('AHC Top Sellers');
-                const sheetHelper = new GoogleSheetsHelper(sheetId);
-                const sheet = await sheetHelper.loadSheet('Sales info');
-                if (sheet) {
-                    await sheet.loadCells('E3:F12');
-                    const topSellers: Collection<string, number> =
-                        new Collection();
-                    for (let i = 3; i < 13; i++) {
-                        const sellerName = await sheet
-                            .getCellByA1(`E${i}`)
-                            .value.toString();
-                        const sellerAmount = await sheet.getCellByA1(`F${i}`)
-                            .value;
-                        if (typeof sellerAmount === 'number') {
-                            topSellers.set(sellerName, sellerAmount);
-                        } else {
-                            await interaction.editReply({
-                                content:
-                                    'An error ocurred while loading data from the Info Center. Please try again later.',
-                            });
-                            return;
-                        }
-                    }
+                const topSellers = await AhfSheetFunctions.GetTopSalesAHC();
+                if (topSellers) {
                     let sellers = '';
                     topSellers.forEach((amount, sellerName) => {
                         sellers += `${sellerName} (${amount.toLocaleString(
                             'en-US'
                         )})\n`;
                     });
+                    const embed = this.colEmbeds.get('AHC Top Sellers');
                     embed
                         .addField('Seller Name (Amount Sold)', sellers, true)
                         .setFooter(
@@ -179,10 +199,9 @@ export class CommandInfoCenter implements Command {
                         embeds: [embed],
                     });
                 } else {
-                    await interaction.editReply({
-                        content:
-                            'An error ocurred while loading data from the Info Center. Please try again later.',
-                    });
+                    await interaction.editReply(
+                        'An error occurred while reading the AHF Info Center database. Please try again later.'
+                    );
                 }
             }
         );
@@ -190,43 +209,16 @@ export class CommandInfoCenter implements Command {
         emitter.on(
             'infoTopSalesAHA',
             async (interaction: ButtonInteraction) => {
-                const sheetId = process.env.GOOGLE_SPREADSHEET_ID;
-                if (!sheetId)
-                    return await interaction.reply({
-                        content:
-                            'An error ocurred while loading data from the Info Center. Please try again later.',
-                        ephemeral: true,
-                    });
                 await interaction.deferReply();
-                const embed = this.colEmbeds.get('AHA Top Sellers');
-                const sheetHelper = new GoogleSheetsHelper(sheetId);
-                const sheet = await sheetHelper.loadSheet('Sales info');
-                if (sheet) {
-                    await sheet.loadCells('E28:F37');
-                    const topSellers: Collection<string, number> =
-                        new Collection();
-                    for (let i = 28; i < 38; i++) {
-                        const sellerName = await sheet
-                            .getCellByA1(`E${i}`)
-                            .value.toString();
-                        const sellerAmount = await sheet.getCellByA1(`F${i}`)
-                            .value;
-                        if (typeof sellerAmount === 'number') {
-                            topSellers.set(sellerName, sellerAmount);
-                        } else {
-                            await interaction.editReply({
-                                content:
-                                    'An error ocurred while loading data from the Info Center. Please try again later.',
-                            });
-                            return;
-                        }
-                    }
+                const topSellers = await AhfSheetFunctions.GetTopSalesAHA();
+                if (topSellers) {
                     let sellers = '';
                     topSellers.forEach((amount, sellerName) => {
                         sellers += `${sellerName} (${amount.toLocaleString(
                             'en-US'
                         )})\n`;
                     });
+                    const embed = this.colEmbeds.get('AHA Top Sellers');
                     embed
                         .addField('Seller Name (Amount Sold)', sellers, true)
                         .setFooter(
@@ -237,63 +229,131 @@ export class CommandInfoCenter implements Command {
                         embeds: [embed],
                     });
                 } else {
-                    await interaction.editReply({
-                        content:
-                            'An error ocurred while loading data from the Info Center. Please try again later.',
-                    });
+                    await interaction.editReply(
+                        'An error occurred while reading the AHF Info Center database. Please try again later.'
+                    );
                 }
             }
         );
 
         emitter.on('infoRafflesAHC', async (interaction: ButtonInteraction) => {
-            const sheetId = process.env.GOOGLE_SPREADSHEET_ID;
-            if (!sheetId)
-                return await interaction.reply({
-                    content:
-                        'An error ocurred while loading data from the Info Center. Please try again later.',
-                    ephemeral: true,
-                });
             await interaction.deferReply();
-            const embed = this.colEmbeds.get('AHC Gold Raffle');
-            const sheetHelper = new GoogleSheetsHelper(sheetId);
-            const sheet = await sheetHelper.loadSheet('Gold Raffle');
-            if (!sheet) {
-                return await interaction.editReply({
-                    content:
-                        'An error ocurred while loading data from the Info Center. Please try again later.',
+            const raffleData = await AhfSheetFunctions.GetRafflesAHC();
+            if (raffleData) {
+                const embed = this.colEmbeds.get('AHC Gold Raffle');
+                embed
+                    .setDescription(
+                        `AHC has two gold raffles - standard and highroller. The standard raffle tickets are 5,000 gold each and the highroller raffle tickets are 50,000 gold each. Gold can be deposited directly to the AHC guild bank to participate.`
+                    )
+                    .addField(
+                        'Total Value of All Prizes',
+                        raffleData.total,
+                        true
+                    )
+                    .addField(
+                        'Total Players with Tickets',
+                        raffleData.players,
+                        true
+                    )
+                    .addField(
+                        'Individual Raffle Pot Values',
+                        `Highroller: ${raffleData.highroller}\n1st Place: ${raffleData.first}\n2nd Place: ${raffleData.second}\n3rd Place: ${raffleData.third}`,
+                        false
+                    )
+                    .setFooter(
+                        `Requested by @${interaction.user.username}#${interaction.user.discriminator}`
+                    )
+                    .setTimestamp();
+                await interaction.editReply({ embeds: [embed] });
+            } else {
+                await interaction.editReply(
+                    'An error occurred while reading the AHF Info Center database. Please try again later.'
+                );
+            }
+        });
+
+        emitter.on(
+            'infoAHCReqsCheck',
+            async (interaction: ButtonInteraction) => {
+                await interaction.deferReply({ ephemeral: true });
+                const discordMember = interaction.member as GuildMember;
+                const memberName = discordMember.nickname
+                    ? discordMember.nickname
+                    : discordMember.user.username;
+                const esoMember = await AhfSheetFunctions.GetGuildMemberAHC(
+                    memberName
+                );
+                if (!esoMember) {
+                    return await interaction.editReply({
+                        content: `Unable to find a guild member with the name ${memberName}. If your Discord account name does not match your in-game account name, please set your nickname to match your in-game account name and try again.`,
+                    });
+                }
+                const embed = this.colEmbeds.get('My AHC Status');
+                embed.addField(
+                    'Sales',
+                    esoMember.Sales.toLocaleString('en-US'),
+                    true
+                );
+                embed.addField(
+                    'Deposits',
+                    esoMember.Reqs.toLocaleString('en-US'),
+                    true
+                );
+                embed.addField(
+                    'Farmed',
+                    esoMember.Farmed.toLocaleString('en-US'),
+                    true
+                );
+                embed.addField(
+                    'Status',
+                    esoMember.Safe
+                        ? `<a:check:846660977910611988> Requirements Met`
+                        : `<a:x_:918254096492929045> Requirements Unmet`,
+                    true
+                );
+                await interaction.editReply({
+                    embeds: [embed],
                 });
             }
-            await sheet.loadCells('O2:R15');
-            const raffleAmountHighroller = await sheet
-                .getCellByA1('R9')
-                .value.toLocaleString('en-US');
-            const raffleAmountFirst = await sheet
-                .getCellByA1('R6')
-                .value.toLocaleString('en-US');
-            const raffleAmountSecond = await sheet
-                .getCellByA1('R7')
-                .value.toLocaleString('en-US');
-            const raffleAmountThird = await sheet
-                .getCellByA1('R8')
-                .value.toLocaleString('en-US');
-            const raffleTotalPrizes = await sheet
-                .getCellByA1('P3')
-                .value.toLocaleString('en-US');
-            const rafflePlayers = await sheet
-                .getCellByA1('R3')
-                .value.toString();
-            embed
-                .setDescription(
-                    `AHC has two gold raffles - standard and highroller. The standard raffle tickets are 5,000 gold each and the highroller raffle tickets are 50,000 gold each. Gold can be deposited directly to the AHC guild bank to participate.`
-                )
-                .addField('Total Value of All Prizes', raffleTotalPrizes, true)
-                .addField('Total Players with Tickets', rafflePlayers, true)
-                .addField(
-                    'Individual Raffle Pot Values',
-                    `Highroller: ${raffleAmountHighroller}\n1st Place: ${raffleAmountFirst}\n2nd Place: ${raffleAmountSecond}\n3rd Place: ${raffleAmountThird}`,
-                    false
+        );
+        emitter.on(
+            'infoAHAReqsCheck',
+            async (interaction: ButtonInteraction) => {
+                await interaction.deferReply({ ephemeral: true });
+                const discordMember = interaction.member as GuildMember;
+                const memberName = discordMember.nickname
+                    ? discordMember.nickname
+                    : discordMember.user.username;
+                const esoMember = await AhfSheetFunctions.GetGuildMemberAHA(
+                    memberName
                 );
-            await interaction.editReply({ embeds: [embed] });
-        });
+                if (!esoMember) {
+                    return await interaction.editReply({
+                        content: `Unable to find a guild member with the name ${memberName}. If your Discord account name does not match your in-game account name, please set your nickname to match your in-game account name and try again.`,
+                    });
+                }
+                const embed = this.colEmbeds.get('My AHA Status');
+                embed.addField(
+                    'Sales',
+                    esoMember.Sales.toLocaleString('en-US'),
+                    true
+                );
+                embed.addField(
+                    'Deposits',
+                    esoMember.Reqs.toLocaleString('en-US'),
+                    true
+                );
+                embed.addField(
+                    'Status',
+                    esoMember.Safe
+                        ? `<a:check:846660977910611988> Requirements Met`
+                        : `<a:x_:918254096492929045> Requirements Unmet`,
+                    true
+                );
+                await interaction.editReply({
+                    embeds: [embed],
+                });
+            }
+        );
     }
 }
