@@ -63,7 +63,7 @@ export class CommandInfoCenter implements Command {
             new MessageActionRow().addComponents(
                 new MessageButton()
                     .setCustomId('infoRafflesAHC')
-                    .setLabel('AHC Gold Raffles')
+                    .setLabel('AHC Raffles')
                     .setStyle('SECONDARY')
                     .setEmoji('853692688549412904')
             ),
