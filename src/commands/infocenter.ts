@@ -380,8 +380,8 @@ export class CommandInfoCenter implements Command {
                 embed.addField(
                     'Status',
                     esoMember.Safe
-                        ? `<a:check:846660977910611988> Requirements Met`
-                        : `<a:x_:918254096492929045> Requirements Unmet`,
+                        ? `<a:x_:918254096492929045> Requirements Met`
+                        : `<a:check:846660977910611988><a:x_:918254096492929045> Requirements Unmet`,
                     true
                 );
                 await interaction.editReply({
