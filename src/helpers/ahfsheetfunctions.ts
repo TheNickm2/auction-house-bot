@@ -155,7 +155,7 @@ export default class AhfSheetFunctions {
                     guildMembers.set(rowData.Who.trim().toLowerCase(), rowData);
                 }
             });
-            return guildMembers.get(memberName);
+            return guildMembers.get(memberName.trim().toLowerCase());
         } catch (ex) {
             console.error(ex);
             return false;
