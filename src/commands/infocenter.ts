@@ -175,6 +175,21 @@ export class CommandInfoCenter implements Command {
                         : ''
                 )
         );
+        this.colEmbeds.set(
+            'My AHC Raffles',
+            new MessageEmbed()
+                .setColor('#4e0891')
+                .setTitle('Your AHC Raffle Entries')
+                .setAuthor(
+                    'AHF Info Center',
+                    process.env.EMBED_AUTHOR_ICON
+                        ? process.env.EMBED_AUTHOR_ICON
+                        : null,
+                    process.env.EMBED_AUTHOR_LINK
+                        ? process.env.EMBED_AUTHOR_LINK
+                        : ''
+                )
+        );
 
         emitter.on(
             'infoTopSalesAHC',
@@ -189,6 +204,7 @@ export class CommandInfoCenter implements Command {
                         )})\n`;
                     });
                     const embed = this.colEmbeds.get('AHC Top Sellers');
+                    embed.fields = []
                     embed
                         .addField('Seller Name (Amount Sold)', sellers, true)
                         .setFooter(
@@ -219,6 +235,7 @@ export class CommandInfoCenter implements Command {
                         )})\n`;
                     });
                     const embed = this.colEmbeds.get('AHA Top Sellers');
+                    embed.fields = [];
                     embed
                         .addField('Seller Name (Amount Sold)', sellers, true)
                         .setFooter(
@@ -241,6 +258,7 @@ export class CommandInfoCenter implements Command {
             const raffleData = await AhfSheetFunctions.GetRafflesAHC();
             if (raffleData) {
                 const embed = this.colEmbeds.get('AHC Gold Raffle');
+                embed.fields = [];
                 embed
                     .setDescription(
                         `AHC has two gold raffles - standard and highroller. The standard raffle tickets are 5,000 gold each and the highroller raffle tickets are 50,000 gold each. Gold can be deposited directly to the AHC guild bank to participate.`
@@ -264,12 +282,66 @@ export class CommandInfoCenter implements Command {
                         `Requested by @${interaction.user.username}#${interaction.user.discriminator}`
                     )
                     .setTimestamp();
-                await interaction.editReply({ embeds: [embed] });
+                await interaction.editReply({
+                    embeds: [embed],
+                    components: [
+                        new MessageActionRow().addComponents(
+                            new MessageButton()
+                                .setCustomId('infoMyRaffles')
+                                .setLabel('Check My Raffle Entries')
+                                .setEmoji('🎟️')
+                                .setStyle('SECONDARY')
+                        ),
+                    ],
+                });
             } else {
                 await interaction.editReply(
                     'An error occurred while reading the AHF Info Center database. Please try again later.'
                 );
             }
+        });
+        emitter.on('infoMyRaffles', async (interaction: ButtonInteraction) => {
+            await interaction.deferReply({ ephemeral: true });
+            const discordMember = interaction.member as GuildMember;
+            const memberName = discordMember.nickname
+                ? discordMember.nickname
+                : discordMember.user.username;
+            const esoMember = await AhfSheetFunctions.GetGuildMemberAHC(
+                memberName
+            );
+            if (!esoMember) {
+                return await interaction.editReply({
+                    content: `Unable to find a guild member with the name ${memberName}. If your Discord account name does not match your in-game account name, please set your nickname to match your in-game account name and try again.`,
+                });
+            }
+            const embed = this.colEmbeds.get('My AHC Raffles');
+            embed.fields = [];
+            embed
+                .setDescription(
+                    'Your current raffle ticket entries can be seen below. Please note that the AHC Info Center is updated roughly once per day, therefore the information below may not reflect recent in-game actions.'
+                )
+                .setTimestamp()
+                .setFooter(
+                    `Requested by @${interaction.user.username}#${interaction.user.discriminator}`
+                )
+                .addField(
+                    'Highroller Raffle Tickets',
+                    esoMember['50k Tickets'].toLocaleString('en-US'),
+                    true
+                )
+                .addField(
+                    'Gold Raffle Tickets',
+                    esoMember['5k Tickets'].toLocaleString('en-US'),
+                    true
+                )
+                .addField(
+                    'Mat Raffle Tickets',
+                    esoMember['Mat Raffle Tickets'].toLocaleString('en-US'),
+                    true
+                );
+            await interaction.editReply({
+                embeds: [embed]
+            });
         });
 
         emitter.on(
@@ -289,6 +361,7 @@ export class CommandInfoCenter implements Command {
                     });
                 }
                 const embed = this.colEmbeds.get('My AHC Status');
+                embed.fields = [];
                 embed.addField(
                     'Sales',
                     esoMember.Sales.toLocaleString('en-US'),
@@ -333,6 +406,7 @@ export class CommandInfoCenter implements Command {
                     });
                 }
                 const embed = this.colEmbeds.get('My AHA Status');
+                embed.fields = [];
                 embed.addField(
                     'Sales',
                     esoMember.Sales.toLocaleString('en-US'),

@@ -127,10 +127,10 @@ export default class AhfSheetFunctions {
             rows.forEach(async (row) => {
                 const rowData = row as IAhcGuildMember;
                 if (rowData.Who && rowData.Who.trim() != '') {
-                    guildMembers.set(rowData.Who, rowData);
+                    guildMembers.set(rowData.Who.trim().toLowerCase(), rowData);
                 }
             });
-            return guildMembers.get(memberName);
+            return guildMembers.get(memberName.trim().toLowerCase());
         } catch (ex) {
             console.error(ex);
             return false;
@@ -152,7 +152,7 @@ export default class AhfSheetFunctions {
             rows.forEach(async (row) => {
                 const rowData = row as IAhaGuildMember;
                 if (rowData.Who && rowData.Who.trim() != '') {
-                    guildMembers.set(rowData.Who, rowData);
+                    guildMembers.set(rowData.Who.trim().toLowerCase(), rowData);
                 }
             });
             return guildMembers.get(memberName);
