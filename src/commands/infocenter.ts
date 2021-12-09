@@ -380,8 +380,8 @@ export class CommandInfoCenter implements Command {
                 embed.addField(
                     'Status',
                     esoMember.Safe
-                        ? `<:checkcheck:716034526798807165> Requirements Met`
-                        : `<:cancelled:572468016227287049> Requirements Unmet`,
+                        ? `<a:check:846660977910611988> Requirements Met`
+                        : `<a:x_:918254096492929045> Requirements Unmet`,
                     true
                 );
                 await interaction.editReply({
@@ -420,8 +420,8 @@ export class CommandInfoCenter implements Command {
                 embed.addField(
                     'Status',
                     esoMember.Safe
-                        ? `<:checkcheck:716034526798807165> Requirements Met`
-                        : `<:cancelled:572468016227287049> Requirements Unmet`,
+                        ? `<a:check:846660977910611988> Requirements Met`
+                        : `<a:x_:918254096492929045> Requirements Unmet`,
                     true
                 );
                 await interaction.editReply({
