@@ -134,7 +134,7 @@ export class CommandInfoCenter implements Command {
             'AHC Gold Raffle',
             new MessageEmbed()
                 .setColor('#4e0891')
-                .setTitle('AHC Gold Raffle Status')
+                .setTitle('AHC Raffle Status')
                 .setAuthor(
                     'AHF Info Center',
                     process.env.EMBED_AUTHOR_ICON

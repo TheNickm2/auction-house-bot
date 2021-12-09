@@ -130,7 +130,7 @@ export default class AhfSheetFunctions {
                     guildMembers.set(rowData.Who.trim().toLowerCase(), rowData);
                 }
             });
-            return guildMembers.get(memberName.trim().toLowerCase());
+            return guildMembers.get(memberName.trim().toLowerCase().replace('@', ''));
         } catch (ex) {
             console.error(ex);
             return false;
@@ -155,7 +155,7 @@ export default class AhfSheetFunctions {
                     guildMembers.set(rowData.Who.trim().toLowerCase(), rowData);
                 }
             });
-            return guildMembers.get(memberName.trim().toLowerCase());
+            return guildMembers.get(memberName.trim().toLowerCase().replace('@', ''));
         } catch (ex) {
             console.error(ex);
             return false;
