@@ -6,6 +6,7 @@ import { EventEmitter } from 'events';
 export class CommandPing implements Command {
     public readonly data = new SlashCommandBuilder()
         .setName('ping')
+        .setDefaultPermission(false)
         .setDescription('Goes pong!');
     public async execute(interaction: CommandInteraction) {
         await interaction.reply('Pong!');

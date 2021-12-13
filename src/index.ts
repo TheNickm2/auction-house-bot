@@ -1,4 +1,4 @@
-import { Client, Intents, Collection } from 'discord.js';
+import { Client, Intents, Collection, ApplicationCommandPermissionData } from 'discord.js';
 import { REST } from '@discordjs/rest';
 import { Routes } from 'discord-api-types/v9';
 import * as DotEnv from 'dotenv';
@@ -62,7 +62,7 @@ const client = new Client({
 });
 
 // Notify when bot is connected
-client.on('ready', () => {
+client.on('ready', async () => {
     console.log(
         `Logged in as ${
             client.user && client.user.tag
@@ -70,6 +70,16 @@ client.on('ready', () => {
                 : 'an unidentifiable bot user'
         }!`
     );
+    const commands = await client.guilds.cache.get(guildId).commands.fetch();
+    const pingCommand = commands.find(cmd => cmd.name === 'ping');
+    if (pingCommand) {
+        const permissions = [{
+            id: '479131605189787665',
+            type: 'ROLE',
+            permission: true
+        }] as ApplicationCommandPermissionData[];
+        pingCommand.permissions.add({ permissions });
+    }
 });
 
 // Process command interactions with the CommandHandler
