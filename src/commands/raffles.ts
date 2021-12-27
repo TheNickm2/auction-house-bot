@@ -2,12 +2,12 @@ import { SlashCommandBuilder } from '@discordjs/builders';
 import { CommandInteraction, MessageEmbed } from 'discord.js';
 import { Command } from './command';
 import { EventEmitter } from 'events';
-import AhfSheetFunctions from '../helpers/ahfsheetfunctions';
+import AhcSheetFunctions from '../helpers/ahcsheetfunctions';
 
 export class CommandRaffles implements Command {
     public data = new SlashCommandBuilder()
         .setName('raffles')
-        .setDescription('Check the status of the various AHF raffles!')
+        .setDescription('Check the status of the various AHC raffles!')
         .addUserOption((option) =>
             option
                 .setName('username')
@@ -22,7 +22,7 @@ export class CommandRaffles implements Command {
             .setColor('#4e0891')
             .setTitle('AHC Raffle Status')
             .setAuthor(
-                'AHF Info Center',
+                'AHC Info Center',
                 process.env.EMBED_AUTHOR_ICON
                     ? process.env.EMBED_AUTHOR_ICON
                     : null,
@@ -36,7 +36,7 @@ export class CommandRaffles implements Command {
                 const memberName = discordMember.nickname
                     ? discordMember.nickname
                     : user.username;
-                const memberInfo = await AhfSheetFunctions.GetGuildMemberAHC(
+                const memberInfo = await AhcSheetFunctions.GetGuildMemberAHC(
                     memberName
                 );
                 if (memberInfo) {
@@ -73,7 +73,7 @@ export class CommandRaffles implements Command {
                 }
             }
         }
-        const raffles = await AhfSheetFunctions.GetRafflesAHC();
+        const raffles = await AhcSheetFunctions.GetRafflesAHC();
         if (!raffles) {
             await interaction.editReply(
                 'An error occurred while loading data from the Info Center. Please try again later.'

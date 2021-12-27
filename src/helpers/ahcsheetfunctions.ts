@@ -3,7 +3,7 @@ import { GoogleSpreadsheetRow } from 'google-spreadsheet';
 import { Collection } from 'discord.js';
 import IAhcGuildMember from '../interfaces/IAhcGuildMember';
 
-export default class AhfSheetFunctions {
+export default class AhcSheetFunctions {
     static async GetTopSalesAHC() {
         try {
             const sheetId = process.env.GOOGLE_SPREADSHEET_ID;

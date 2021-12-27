@@ -12,17 +12,17 @@ import { Command } from './command';
 import { EventEmitter } from 'events';
 import GoogleSheetsHelper from '../helpers/googlesheets';
 import { GoogleSpreadsheetRow } from 'google-spreadsheet';
-import AhfSheetFunctions from '../helpers/ahfsheetfunctions';
+import AHCSheetFunctions from '../helpers/AhcSheetfunctions';
 import IAhcGuildMember from '../interfaces/IAhcGuildMember';
 export class CommandInfoCenter implements Command {
     public readonly data = new SlashCommandBuilder()
         .setName('infocenter')
-        .setDescription('View data from the AHF Info Center within Discord!');
+        .setDescription('View data from the AHC Info Center within Discord!');
     public async execute(interaction: CommandInteraction) {
         await interaction.reply({
             embeds: [
                 this.colEmbeds
-                    .get('AHF Info Center')
+                    .get('AHC Info Center')
                     .setFooter(
                         `@${interaction.user.username}#${interaction.user.discriminator}`
                     ),
@@ -56,17 +56,17 @@ export class CommandInfoCenter implements Command {
 
         this.colEmbeds = new Collection<string, MessageEmbed>();
         this.colEmbeds.set(
-            'AHF Info Center',
+            'AHC Info Center',
             new MessageEmbed()
                 .setColor('#4e0891')
-                .setTitle('AHF Info Center')
+                .setTitle('AHC Info Center')
                 .setURL(
                     process.env.EMBED_AUTHOR_LINK
                         ? process.env.EMBED_AUTHOR_LINK
                         : ''
                 )
                 .setAuthor(
-                    'AHF Info Center',
+                    'AHC Info Center',
                     process.env.EMBED_AUTHOR_ICON
                         ? process.env.EMBED_AUTHOR_ICON
                         : null,
@@ -75,7 +75,7 @@ export class CommandInfoCenter implements Command {
                         : ''
                 )
                 .setDescription(
-                    'Click the buttons below to navigate the AHF Info Center right here within Discord (or click "AHF Info Center" above to open the full info center in your web browser!)\n\nThe AHF Info Center is typically updated at least once daily, but may not always show real-time data.'
+                    'Click the buttons below to navigate the AHC Info Center right here within Discord (or click "AHC Info Center" above to open the full info center in your web browser!)\n\nThe AHC Info Center is typically updated at least once daily, but may not always show real-time data.'
                 )
                 .setTimestamp()
         );
@@ -85,7 +85,7 @@ export class CommandInfoCenter implements Command {
                 .setColor('#4e0891')
                 .setTitle('AHC Top Sellers')
                 .setAuthor(
-                    'AHF Info Center',
+                    'AHC Info Center',
                     process.env.EMBED_AUTHOR_ICON
                         ? process.env.EMBED_AUTHOR_ICON
                         : null,
@@ -103,7 +103,7 @@ export class CommandInfoCenter implements Command {
                 .setColor('#4e0891')
                 .setTitle('AHC Raffle Status')
                 .setAuthor(
-                    'AHF Info Center',
+                    'AHC Info Center',
                     process.env.EMBED_AUTHOR_ICON
                         ? process.env.EMBED_AUTHOR_ICON
                         : null,
@@ -118,7 +118,7 @@ export class CommandInfoCenter implements Command {
                 .setColor('#4e0891')
                 .setTitle('Your AHC Guild Status')
                 .setAuthor(
-                    'AHF Info Center',
+                    'AHC Info Center',
                     process.env.EMBED_AUTHOR_ICON
                         ? process.env.EMBED_AUTHOR_ICON
                         : null,
@@ -133,7 +133,7 @@ export class CommandInfoCenter implements Command {
                 .setColor('#4e0891')
                 .setTitle('Your AHC Raffle Entries')
                 .setAuthor(
-                    'AHF Info Center',
+                    'AHC Info Center',
                     process.env.EMBED_AUTHOR_ICON
                         ? process.env.EMBED_AUTHOR_ICON
                         : null,
@@ -147,7 +147,7 @@ export class CommandInfoCenter implements Command {
             'infoTopSalesAHC',
             async (interaction: ButtonInteraction) => {
                 await interaction.deferReply();
-                const topSellers = await AhfSheetFunctions.GetTopSalesAHC();
+                const topSellers = await AHCSheetFunctions.GetTopSalesAHC();
                 if (topSellers) {
                     let sellers = '';
                     topSellers.forEach((amount, sellerName) => {
@@ -168,7 +168,7 @@ export class CommandInfoCenter implements Command {
                     });
                 } else {
                     await interaction.editReply(
-                        'An error occurred while reading the AHF Info Center database. Please try again later.'
+                        'An error occurred while reading the AHC Info Center database. Please try again later.'
                     );
                 }
             }
@@ -176,7 +176,7 @@ export class CommandInfoCenter implements Command {
 
         emitter.on('infoRafflesAHC', async (interaction: ButtonInteraction) => {
             await interaction.deferReply();
-            const raffleData = await AhfSheetFunctions.GetRafflesAHC();
+            const raffleData = await AHCSheetFunctions.GetRafflesAHC();
             if (raffleData) {
                 const embed = this.colEmbeds.get('AHC Gold Raffle');
                 embed.fields = [];
@@ -217,7 +217,7 @@ export class CommandInfoCenter implements Command {
                 });
             } else {
                 await interaction.editReply(
-                    'An error occurred while reading the AHF Info Center database. Please try again later.'
+                    'An error occurred while reading the AHC Info Center database. Please try again later.'
                 );
             }
         });
@@ -227,7 +227,7 @@ export class CommandInfoCenter implements Command {
             const memberName = discordMember.nickname
                 ? discordMember.nickname
                 : discordMember.user.username;
-            const esoMember = await AhfSheetFunctions.GetGuildMemberAHC(
+            const esoMember = await AHCSheetFunctions.GetGuildMemberAHC(
                 memberName
             );
             if (!esoMember) {
@@ -273,7 +273,7 @@ export class CommandInfoCenter implements Command {
                 const memberName = discordMember.nickname
                     ? discordMember.nickname
                     : discordMember.user.username;
-                const esoMember = await AhfSheetFunctions.GetGuildMemberAHC(
+                const esoMember = await AHCSheetFunctions.GetGuildMemberAHC(
                     memberName
                 );
                 if (!esoMember) {
