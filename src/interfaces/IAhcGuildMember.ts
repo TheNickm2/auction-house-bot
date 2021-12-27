@@ -13,4 +13,6 @@ export default interface AhcGuildMember extends GoogleSpreadsheetRow {
     '5k Tickets': number;
     '50k Tickets': number;
     'Mat Raffle Tickets': number;
+    Cow: number;
+    Chicken: number;
 }

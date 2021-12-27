@@ -14,7 +14,6 @@ import GoogleSheetsHelper from '../helpers/googlesheets';
 import { GoogleSpreadsheetRow } from 'google-spreadsheet';
 import AhfSheetFunctions from '../helpers/ahfsheetfunctions';
 import IAhcGuildMember from '../interfaces/IAhcGuildMember';
-import IAhaGuildMember from '../interfaces/IAhaGuildMember';
 export class CommandInfoCenter implements Command {
     public readonly data = new SlashCommandBuilder()
         .setName('infocenter')
@@ -39,34 +38,20 @@ export class CommandInfoCenter implements Command {
             new MessageActionRow().addComponents(
                 new MessageButton()
                     .setCustomId('infoTopSalesAHC')
-                    .setLabel('Top Sales [AHC]')
+                    .setLabel('Top Sellers')
                     .setStyle('PRIMARY')
                     .setEmoji('816522754529689651'),
-                new MessageButton()
-                    .setCustomId('infoTopSalesAHA')
-                    .setLabel('Top Sales [AHA]')
-                    .setStyle('PRIMARY')
-                    .setEmoji('816522229293776976')
-            ),
-            new MessageActionRow().addComponents(
                 new MessageButton()
                     .setCustomId('infoAHCReqsCheck')
-                    .setLabel('Check My Status [AHC]')
+                    .setLabel('Check My Status')
                     .setStyle('SUCCESS')
                     .setEmoji('816522754529689651'),
-                new MessageButton()
-                    .setCustomId('infoAHAReqsCheck')
-                    .setLabel('Check My Status [AHA]')
-                    .setStyle('SUCCESS')
-                    .setEmoji('816522229293776976')
-            ),
-            new MessageActionRow().addComponents(
                 new MessageButton()
                     .setCustomId('infoRafflesAHC')
                     .setLabel('AHC Raffles')
                     .setStyle('SECONDARY')
                     .setEmoji('853692688549412904')
-            ),
+            )
         ];
 
         this.colEmbeds = new Collection<string, MessageEmbed>();
@@ -113,24 +98,6 @@ export class CommandInfoCenter implements Command {
                 )
         );
         this.colEmbeds.set(
-            'AHA Top Sellers',
-            new MessageEmbed()
-                .setColor('#4e0891')
-                .setTitle('AHA Top Sellers')
-                .setAuthor(
-                    'AHF Info Center',
-                    process.env.EMBED_AUTHOR_ICON
-                        ? process.env.EMBED_AUTHOR_ICON
-                        : null,
-                    process.env.EMBED_AUTHOR_LINK
-                        ? process.env.EMBED_AUTHOR_LINK
-                        : ''
-                )
-                .setThumbnail(
-                    'https://cdn.discordapp.com/emojis/816522229293776976.png?size=4096'
-                )
-        );
-        this.colEmbeds.set(
             'AHC Gold Raffle',
             new MessageEmbed()
                 .setColor('#4e0891')
@@ -150,21 +117,6 @@ export class CommandInfoCenter implements Command {
             new MessageEmbed()
                 .setColor('#4e0891')
                 .setTitle('Your AHC Guild Status')
-                .setAuthor(
-                    'AHF Info Center',
-                    process.env.EMBED_AUTHOR_ICON
-                        ? process.env.EMBED_AUTHOR_ICON
-                        : null,
-                    process.env.EMBED_AUTHOR_LINK
-                        ? process.env.EMBED_AUTHOR_LINK
-                        : ''
-                )
-        );
-        this.colEmbeds.set(
-            'My AHA Status',
-            new MessageEmbed()
-                .setColor('#4e0891')
-                .setTitle('Your AHA Guild Status')
                 .setAuthor(
                     'AHF Info Center',
                     process.env.EMBED_AUTHOR_ICON
@@ -205,37 +157,6 @@ export class CommandInfoCenter implements Command {
                     });
                     const embed = this.colEmbeds.get('AHC Top Sellers');
                     embed.fields = []
-                    embed
-                        .addField('Seller Name (Amount Sold)', sellers, true)
-                        .setFooter(
-                            `Requested by @${interaction.user.username}#${interaction.user.discriminator}`
-                        )
-                        .setTimestamp();
-                    await interaction.editReply({
-                        embeds: [embed],
-                    });
-                } else {
-                    await interaction.editReply(
-                        'An error occurred while reading the AHF Info Center database. Please try again later.'
-                    );
-                }
-            }
-        );
-
-        emitter.on(
-            'infoTopSalesAHA',
-            async (interaction: ButtonInteraction) => {
-                await interaction.deferReply();
-                const topSellers = await AhfSheetFunctions.GetTopSalesAHA();
-                if (topSellers) {
-                    let sellers = '';
-                    topSellers.forEach((amount, sellerName) => {
-                        sellers += `${sellerName} (${amount.toLocaleString(
-                            'en-US'
-                        )})\n`;
-                    });
-                    const embed = this.colEmbeds.get('AHA Top Sellers');
-                    embed.fields = [];
                     embed
                         .addField('Seller Name (Amount Sold)', sellers, true)
                         .setFooter(
@@ -375,46 +296,6 @@ export class CommandInfoCenter implements Command {
                 embed.addField(
                     'Farmed',
                     esoMember.Farmed.toLocaleString('en-US'),
-                    true
-                );
-                embed.addField(
-                    'Status',
-                    esoMember.Safe
-                        ? `<a:check:918626532438704129> Requirements Met`
-                        : `<a:x_:918254096492929045> Requirements Unmet`,
-                    true
-                );
-                await interaction.editReply({
-                    embeds: [embed],
-                });
-            }
-        );
-        emitter.on(
-            'infoAHAReqsCheck',
-            async (interaction: ButtonInteraction) => {
-                await interaction.deferReply({ ephemeral: true });
-                const discordMember = interaction.member as GuildMember;
-                const memberName = discordMember.nickname
-                    ? discordMember.nickname
-                    : discordMember.user.username;
-                const esoMember = await AhfSheetFunctions.GetGuildMemberAHA(
-                    memberName
-                );
-                if (!esoMember) {
-                    return await interaction.editReply({
-                        content: `Unable to find a guild member with the name ${memberName}. If your Discord account name does not match your in-game account name, please set your nickname to match your in-game account name and try again.`,
-                    });
-                }
-                const embed = this.colEmbeds.get('My AHA Status');
-                embed.fields = [];
-                embed.addField(
-                    'Sales',
-                    esoMember.Sales.toLocaleString('en-US'),
-                    true
-                );
-                embed.addField(
-                    'Deposits',
-                    esoMember.Reqs.toLocaleString('en-US'),
                     true
                 );
                 embed.addField(
