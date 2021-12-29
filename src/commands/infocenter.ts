@@ -12,7 +12,7 @@ import { Command } from './command';
 import { EventEmitter } from 'events';
 import GoogleSheetsHelper from '../helpers/googlesheets';
 import { GoogleSpreadsheetRow } from 'google-spreadsheet';
-import AHCSheetFunctions from '../helpers/AhcSheetfunctions';
+import AHCSheetFunctions from '../helpers/ahcsheetfunctions';
 import IAhcGuildMember from '../interfaces/IAhcGuildMember';
 export class CommandInfoCenter implements Command {
     public readonly data = new SlashCommandBuilder()
