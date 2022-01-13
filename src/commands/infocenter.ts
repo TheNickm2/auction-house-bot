@@ -198,6 +198,13 @@ export class CommandInfoCenter implements Command {
           content: `Unable to find a guild member with the name ${memberName}. If your Discord account name does not match your in-game account name, please set your nickname to match your in-game account name and try again.`,
         });
       }
+
+      let key50kTix, key5kTix;
+      Object.keys(esoMember).forEach(key => {
+        if (key.startsWith('5k Tickets')) key5kTix = key;
+        else if (key.startsWith('50k Tickets')) key50kTix = key;
+      });
+
       const embed = this.colEmbeds.get('My AHC Raffles');
       embed.fields = [];
       embed
@@ -210,12 +217,12 @@ export class CommandInfoCenter implements Command {
         )
         .addField(
           'Highroller Raffle Tickets',
-          esoMember['50k Tickets'].toLocaleString('en-US'),
+          esoMember[key50kTix].toLocaleString('en-US'),
           true
         )
         .addField(
           'Gold Raffle Tickets',
-          esoMember['5k Tickets'].toLocaleString('en-US'),
+          esoMember[key5kTix].toLocaleString('en-US'),
           true
         )
         .addField(

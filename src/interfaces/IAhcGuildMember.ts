@@ -10,9 +10,8 @@ export default interface AhcGuildMember extends GoogleSpreadsheetRow {
   'Sales Met': string;
   Status: string;
   Safe: Boolean;
-  '5k Tickets': number;
-  '50k Tickets': number;
   'Mat Raffle Tickets': number;
   Cow: number;
   Chicken: number;
+  [key: string]: any;
 }

@@ -35,6 +35,11 @@ export class CommandRaffles implements Command {
         const memberInfo = await AhcSheetFunctions.GetGuildMemberAHC(
           memberName
         );
+        let key50kTix, key5kTix;
+        Object.keys(memberInfo).forEach(key => {
+          if (key.startsWith('5k Tickets')) key5kTix = key;
+          else if (key.startsWith('50k Tickets')) key50kTix = key;
+        });
         if (memberInfo) {
           embed
             .setDescription(
@@ -47,12 +52,12 @@ export class CommandRaffles implements Command {
             )
             .addField(
               'Highroller Raffle Tickets',
-              memberInfo['50k Tickets'].toLocaleString('en-US'),
+              memberInfo[key50kTix].toLocaleString('en-US'),
               true
             )
             .addField(
               'Gold Raffle Tickets',
-              memberInfo['5k Tickets'].toLocaleString('en-US'),
+              memberInfo[key5kTix].toLocaleString('en-US'),
               true
             )
             .addField(
