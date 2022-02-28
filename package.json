@@ -35,5 +35,8 @@
     "start": "ts-node src/index.ts",
     "dev": "ts-node-dev --respawn src/index.ts",
     "watch": "npm run dev"
+  },
+  "dependencies": {
+    "tall": "^4.2.0"
   }
 }
