@@ -16,11 +16,11 @@ export default class AhcSheetFunctions {
       const sheetHelper = new GoogleSheetsHelper(sheetId);
       const sheet = await sheetHelper.loadSheet('Sales info');
       if (!sheet) return false;
-      await sheet.loadCells('E3:F12');
+      await sheet.loadCells('B3:C12');
       const topSellers: Collection<string, number> = new Collection();
       for (let i = 3; i < 13; i++) {
-        const sellerName = await sheet.getCellByA1(`E${i}`).value.toString();
-        const sellerAmount = await sheet.getCellByA1(`F${i}`).value;
+        const sellerName = await sheet.getCellByA1(`B${i}`).value.toString();
+        const sellerAmount = await sheet.getCellByA1(`C${i}`).value;
         if (typeof sellerAmount === 'number') {
           topSellers.set(sellerName, sellerAmount);
         } else {
