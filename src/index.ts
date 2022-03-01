@@ -65,43 +65,51 @@ const client = new Client({
 
 // Notify when bot is connected
 client.on('ready', async () => {
-  console.log(
-    `Logged in as ${
-      client.user && client.user.tag
-        ? client.user.tag
-        : 'an unidentifiable bot user'
-    }!`
-  );
-  const commands = await client.guilds.cache.get(guildId).commands.fetch();
-  const pingCommand = commands.find((cmd) => cmd.name === 'ping');
-  if (pingCommand) {
-    const permissions = [
-      {
-        id: '479131605189787665',
-        type: 'ROLE',
-        permission: true,
-      },
-    ] as ApplicationCommandPermissionData[];
-    pingCommand.permissions.add({ permissions });
+  try {
+    console.log(
+      `Logged in as ${
+        client.user && client.user.tag
+          ? client.user.tag
+          : 'an unidentifiable bot user'
+      }!`
+    );
+    const commands = await client.guilds.cache.get(guildId).commands.fetch();
+    const pingCommand = commands.find((cmd) => cmd.name === 'ping');
+    if (pingCommand) {
+      const permissions = [
+        {
+          id: '479131605189787665',
+          type: 'ROLE',
+          permission: true,
+        },
+      ] as ApplicationCommandPermissionData[];
+      pingCommand.permissions.add({ permissions });
+    }
+  } catch (err: any) {
+    console.error(err);
   }
 });
 
 // Process command interactions with the CommandHandler
 client.on('interactionCreate', async (interaction) => {
-  if (interaction.isCommand()) {
-    const command = commands.get(interaction.commandName);
-    if (!command) return;
-    try {
-      await command.execute(interaction);
-    } catch (error) {
-      console.error(error);
-      await interaction.reply({
-        content: 'An error occurred while executing this command.',
-        ephemeral: true,
-      });
+  try {
+    if (interaction.isCommand()) {
+      const command = commands.get(interaction.commandName);
+      if (!command) return;
+      try {
+        await command.execute(interaction);
+      } catch (error) {
+        console.error(error);
+        await interaction.reply({
+          content: 'An error occurred while executing this command.',
+          ephemeral: true,
+        });
+      }
+    } else if (interaction.isButton()) {
+      emitter.emit(interaction.customId, interaction);
     }
-  } else if (interaction.isButton()) {
-    emitter.emit(interaction.customId, interaction);
+  } catch (err: any) {
+    console.error(err);
   }
 });
 

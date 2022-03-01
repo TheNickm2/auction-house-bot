@@ -9,17 +9,23 @@ export class CommandDadJoke implements Command {
     .setName('dadjoke')
     .setDescription('Get a random joke from the dad-a-base');
   public async execute(interaction: CommandInteraction) {
-    const dadJoke = await this.getDadJoke();
-    if (dadJoke) {
-      await interaction.reply(dadJoke);
-    } else {
-      await interaction.reply({
-        content:
-          'Failed to obtain a dad joke from the dad-a-base. Please try again later.',
-        ephemeral: true,
-      });
+    try {
+      const dadJoke = await this.getDadJoke();
+      if (dadJoke) {
+        await interaction.reply(dadJoke);
+      } else {
+        await interaction.reply({
+          content:
+            'Failed to obtain a dad joke from the dad-a-base. Please try again later.',
+          ephemeral: true,
+        });
+      }
+      return null;
     }
-    return null;
+    catch (err: any) {
+      console.error(err);
+      return null;
+    }
   }
   constructor(emitter: EventEmitter) {}
   async getDadJoke() {

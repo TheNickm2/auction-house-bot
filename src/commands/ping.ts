@@ -9,7 +9,11 @@ export class CommandPing implements Command {
     .setDefaultPermission(false)
     .setDescription('Goes pong!');
   public async execute(interaction: CommandInteraction) {
-    await interaction.reply('Pong!');
+    try {
+      await interaction.reply('Pong!');
+    } catch (err: any) {
+      console.error(err);
+    }
   }
   constructor(emitter: EventEmitter) {}
 }

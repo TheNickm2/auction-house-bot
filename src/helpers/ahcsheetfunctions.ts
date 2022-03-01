@@ -85,7 +85,7 @@ export default class AhcSheetFunctions {
       const sheet = await sheetHelper.loadSheet('AHC Bot Pull');
       if (!sheet) return false;
       await sheet.loadHeaderRow();
-      await sheet.loadCells('A1:M502');
+      await sheet.loadCells('A1:F502');
       const rows = await sheet.getRows();
       const guildMembers = new Collection<string, IAhcGuildMember>();
       rows.forEach(async (row) => {
