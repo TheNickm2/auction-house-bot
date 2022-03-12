@@ -21,8 +21,7 @@ export class CommandDadJoke implements Command {
         });
       }
       return null;
-    }
-    catch (err: any) {
+    } catch (err: any) {
       console.error(err);
       return null;
     }

@@ -37,6 +37,7 @@
     "watch": "npm run dev"
   },
   "dependencies": {
+    "prettier": "^2.5.1",
     "tall": "^4.2.0"
   }
 }
