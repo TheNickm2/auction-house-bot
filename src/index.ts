@@ -10,6 +10,8 @@ import * as DotEnv from 'dotenv';
 import Commands from '@/commands';
 import { EventEmitter } from 'events';
 
+const OFFICER_ROLE_IDS = ['213484495100182528', '912176385349525534'];
+
 // Initialize EventEmitter
 const emitter = new EventEmitter();
 
@@ -56,11 +58,7 @@ const rest = new REST({ version: '9' }).setToken(botToken);
 // Create the Discord Client instance
 // ! IMPORTANT: All required intents must be specified or retrieving certain data will be impossible
 const client = new Client({
-  intents: [
-    Intents.FLAGS.GUILDS,
-    Intents.FLAGS.GUILD_MEMBERS,
-    Intents.FLAGS.GUILD_MESSAGES,
-  ],
+  intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MEMBERS],
 });
 
 // Notify when bot is connected
@@ -74,16 +72,15 @@ client.on('ready', async () => {
       }!`
     );
     const commands = await client.guilds.cache.get(guildId)?.commands.fetch();
-    const pingCommand = commands?.find((cmd) => cmd.name === 'ping');
-    if (pingCommand) {
-      const permissions = [
-        {
-          id: '479131605189787665',
-          type: 'ROLE',
+    const auctionCommand = commands?.find((cmd) => cmd.name === 'auction');
+    if (auctionCommand) {
+      auctionCommand.permissions.add({
+        permissions: OFFICER_ROLE_IDS.map((role) => ({
+          id: role,
+          type: 'ROLE' as const,
           permission: true,
-        },
-      ] as ApplicationCommandPermissionData[];
-      pingCommand.permissions.add({ permissions });
+        })),
+      });
     }
   } catch (err: any) {
     console.error(err);
