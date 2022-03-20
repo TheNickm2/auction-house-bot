@@ -16,8 +16,8 @@ export default class GoogleSheetsHelper {
   constructor(docId: string) {
     this.initialized = false;
     this.doc = new GoogleSpreadsheet(docId);
-    this.clientEmail = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
-    this.clientPrivateKey = process.env.GOOGLE_PRIVATE_KEY;
+    this.clientEmail = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL ?? '';
+    this.clientPrivateKey = process.env.GOOGLE_PRIVATE_KEY ?? '';
   }
 
   /**

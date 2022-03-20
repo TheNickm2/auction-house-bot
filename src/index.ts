@@ -7,7 +7,7 @@ import {
 import { REST } from '@discordjs/rest';
 import { Routes } from 'discord-api-types/v9';
 import * as DotEnv from 'dotenv';
-import Commands from './commands';
+import Commands from '@/commands';
 import { EventEmitter } from 'events';
 
 // Initialize EventEmitter
@@ -73,8 +73,8 @@ client.on('ready', async () => {
           : 'an unidentifiable bot user'
       }!`
     );
-    const commands = await client.guilds.cache.get(guildId).commands.fetch();
-    const pingCommand = commands.find((cmd) => cmd.name === 'ping');
+    const commands = await client.guilds.cache.get(guildId)?.commands.fetch();
+    const pingCommand = commands?.find((cmd) => cmd.name === 'ping');
     if (pingCommand) {
       const permissions = [
         {

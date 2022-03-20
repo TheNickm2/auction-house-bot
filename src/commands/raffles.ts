@@ -24,11 +24,13 @@ export class CommandRaffles implements Command {
         .setTitle('AHC Raffle Status')
         .setAuthor(
           'AHC Info Center',
-          process.env.EMBED_AUTHOR_ICON ? process.env.EMBED_AUTHOR_ICON : null,
+          process.env.EMBED_AUTHOR_ICON
+            ? process.env.EMBED_AUTHOR_ICON
+            : undefined,
           process.env.EMBED_AUTHOR_LINK ? process.env.EMBED_AUTHOR_LINK : ''
         );
       if (user) {
-        const discordMember = await interaction.guild.members.fetch(user);
+        const discordMember = await interaction.guild?.members.fetch(user);
         if (discordMember) {
           const memberName = discordMember.nickname
             ? discordMember.nickname
@@ -36,8 +38,9 @@ export class CommandRaffles implements Command {
           const memberInfo = await AhcSheetFunctions.GetGuildMemberAHC(
             memberName
           );
-          let key50kTix, key5kTix;
-          Object.keys(memberInfo).forEach((key) => {
+          let key50kTix = '',
+            key5kTix = '';
+          Object.keys(memberInfo ?? {}).forEach((key) => {
             if (key.startsWith('5k Tickets')) key5kTix = key;
             else if (key.startsWith('50k Tickets')) key50kTix = key;
           });
@@ -101,5 +104,4 @@ export class CommandRaffles implements Command {
       return;
     }
   }
-  constructor(emitter: EventEmitter) {}
 }

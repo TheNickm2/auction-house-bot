@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { CommandInteraction } from 'discord.js';
-import axios, { AxiosInstance } from 'axios';
+import axios from 'axios';
 import { Command } from './command';
 import { EventEmitter } from 'events';
 
@@ -20,13 +20,11 @@ export class CommandDadJoke implements Command {
           ephemeral: true,
         });
       }
-      return null;
     } catch (err: any) {
       console.error(err);
-      return null;
+      return;
     }
   }
-  constructor(emitter: EventEmitter) {}
   async getDadJoke() {
     try {
       const response = await axios({
@@ -41,10 +39,9 @@ export class CommandDadJoke implements Command {
       if (response && response.status === 200) {
         if (response.data.joke) return response.data.joke;
       }
-      return null;
     } catch (err: any) {
       console.error(err);
-      return null;
+      return;
     }
   }
 }

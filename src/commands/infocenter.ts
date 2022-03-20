@@ -20,14 +20,10 @@ export class CommandInfoCenter implements Command {
     .setDescription('View data from the AHC Info Center within Discord!');
   public async execute(interaction: CommandInteraction) {
     try {
+      const embed =
+        this.colEmbeds?.get('AHC Info Center') ?? new MessageEmbed();
       await interaction.reply({
-        embeds: [
-          this.colEmbeds
-            .get('AHC Info Center')
-            .setFooter(
-              `@${interaction.user.username}#${interaction.user.discriminator}`
-            ),
-        ],
+        embeds: [embed],
         components: this.components,
         ephemeral: true,
       });
@@ -35,8 +31,9 @@ export class CommandInfoCenter implements Command {
       console.error(err);
     }
   }
-  private readonly components: Array<MessageActionRow>;
-  private readonly colEmbeds: Collection<string, MessageEmbed>;
+  private readonly components: Array<MessageActionRow> = [];
+  private readonly colEmbeds: Collection<string, MessageEmbed> | undefined =
+    undefined;
   constructor(emitter: EventEmitter) {
     try {
       this.components = [
@@ -72,7 +69,7 @@ export class CommandInfoCenter implements Command {
             'AHC Info Center',
             process.env.EMBED_AUTHOR_ICON
               ? process.env.EMBED_AUTHOR_ICON
-              : null,
+              : undefined,
             process.env.EMBED_AUTHOR_LINK ? process.env.EMBED_AUTHOR_LINK : ''
           )
           .setDescription(
@@ -89,7 +86,7 @@ export class CommandInfoCenter implements Command {
             'AHC Info Center',
             process.env.EMBED_AUTHOR_ICON
               ? process.env.EMBED_AUTHOR_ICON
-              : null,
+              : undefined,
             process.env.EMBED_AUTHOR_LINK ? process.env.EMBED_AUTHOR_LINK : ''
           )
           .setThumbnail(
@@ -105,7 +102,7 @@ export class CommandInfoCenter implements Command {
             'AHC Info Center',
             process.env.EMBED_AUTHOR_ICON
               ? process.env.EMBED_AUTHOR_ICON
-              : null,
+              : undefined,
             process.env.EMBED_AUTHOR_LINK ? process.env.EMBED_AUTHOR_LINK : ''
           )
       );
@@ -118,7 +115,7 @@ export class CommandInfoCenter implements Command {
             'AHC Info Center',
             process.env.EMBED_AUTHOR_ICON
               ? process.env.EMBED_AUTHOR_ICON
-              : null,
+              : undefined,
             process.env.EMBED_AUTHOR_LINK ? process.env.EMBED_AUTHOR_LINK : ''
           )
       );
@@ -131,7 +128,7 @@ export class CommandInfoCenter implements Command {
             'AHC Info Center',
             process.env.EMBED_AUTHOR_ICON
               ? process.env.EMBED_AUTHOR_ICON
-              : null,
+              : undefined,
             process.env.EMBED_AUTHOR_LINK ? process.env.EMBED_AUTHOR_LINK : ''
           )
       );
@@ -144,8 +141,8 @@ export class CommandInfoCenter implements Command {
           topSellers.forEach((amount, sellerName) => {
             sellers += `${sellerName} (${amount.toLocaleString('en-US')})\n`;
           });
-          const embed = this.colEmbeds.get('AHC Top Sellers');
-          embed.fields = [];
+          const embed =
+            this.colEmbeds?.get('AHC Top Sellers') ?? new MessageEmbed();
           embed
             .addField('Seller Name (Amount Sold)', sellers, true)
             .setFooter(
@@ -166,7 +163,8 @@ export class CommandInfoCenter implements Command {
         await interaction.deferReply();
         const raffleData = await AHCSheetFunctions.GetRafflesAHC();
         if (raffleData) {
-          const embed = this.colEmbeds.get('AHC Gold Raffle');
+          const embed =
+            this.colEmbeds?.get('AHC Gold Raffle') ?? new MessageEmbed();
           embed.fields = [];
           embed
             .setDescription(
@@ -214,13 +212,15 @@ export class CommandInfoCenter implements Command {
           });
         }
 
-        let key50kTix, key5kTix;
+        let key50kTix = '',
+          key5kTix = '';
         Object.keys(esoMember).forEach((key) => {
           if (key.startsWith('5k Tickets')) key5kTix = key;
           else if (key.startsWith('50k Tickets')) key50kTix = key;
         });
 
-        const embed = this.colEmbeds.get('My AHC Raffles');
+        const embed =
+          this.colEmbeds?.get('My AHC Raffles') ?? new MessageEmbed();
         embed.fields = [];
         embed
           .setDescription(
@@ -262,7 +262,8 @@ export class CommandInfoCenter implements Command {
             content: `Unable to find a guild member with the name ${memberName}. If your Discord account name does not match your in-game account name, please set your nickname to match your in-game account name and try again.`,
           });
         }
-        const embed = this.colEmbeds.get('My AHC Status');
+        const embed =
+          this.colEmbeds?.get('My AHC Status') ?? new MessageEmbed();
         embed.fields = [];
         embed.addField('Sales', esoMember.Sales.toLocaleString('en-US'), true);
         if (esoMember.Farmed && esoMember.Farmed > 0) {
