@@ -65,13 +65,11 @@ export class CommandInfoCenter implements Command {
           .setURL(
             process.env.EMBED_AUTHOR_LINK ? process.env.EMBED_AUTHOR_LINK : ''
           )
-          .setAuthor(
-            'AHC Info Center',
-            process.env.EMBED_AUTHOR_ICON
-              ? process.env.EMBED_AUTHOR_ICON
-              : undefined,
-            process.env.EMBED_AUTHOR_LINK ? process.env.EMBED_AUTHOR_LINK : ''
-          )
+          .setAuthor({
+            name: 'AHC Info Center',
+            iconURL: process.env.EMBED_AUTHOR_ICON ?? '',
+            url: process.env.EMBED_AUTHOR_LINK ?? '',
+          })
           .setDescription(
             'Click the buttons below to navigate the AHC Info Center right here within Discord (or click "AHC Info Center" above to open the full info center in your web browser!)\n\nThe AHC Info Center is typically updated at least once daily, but may not always show real-time data.'
           )
@@ -82,13 +80,11 @@ export class CommandInfoCenter implements Command {
         new MessageEmbed()
           .setColor('#4e0891')
           .setTitle('AHC Top Sellers')
-          .setAuthor(
-            'AHC Info Center',
-            process.env.EMBED_AUTHOR_ICON
-              ? process.env.EMBED_AUTHOR_ICON
-              : undefined,
-            process.env.EMBED_AUTHOR_LINK ? process.env.EMBED_AUTHOR_LINK : ''
-          )
+          .setAuthor({
+            name: 'AHC Info Center',
+            iconURL: process.env.EMBED_AUTHOR_ICON ?? '',
+            url: process.env.EMBED_AUTHOR_LINK ?? '',
+          })
           .setThumbnail(
             'https://cdn.discordapp.com/emojis/816522754529689651.png?size=4096'
           )
@@ -98,39 +94,33 @@ export class CommandInfoCenter implements Command {
         new MessageEmbed()
           .setColor('#4e0891')
           .setTitle('AHC Raffle Status')
-          .setAuthor(
-            'AHC Info Center',
-            process.env.EMBED_AUTHOR_ICON
-              ? process.env.EMBED_AUTHOR_ICON
-              : undefined,
-            process.env.EMBED_AUTHOR_LINK ? process.env.EMBED_AUTHOR_LINK : ''
-          )
+          .setAuthor({
+            name: 'AHC Info Center',
+            iconURL: process.env.EMBED_AUTHOR_ICON ?? '',
+            url: process.env.EMBED_AUTHOR_LINK ?? '',
+          })
       );
       this.colEmbeds.set(
         'My AHC Status',
         new MessageEmbed()
           .setColor('#4e0891')
           .setTitle('Your AHC Guild Status')
-          .setAuthor(
-            'AHC Info Center',
-            process.env.EMBED_AUTHOR_ICON
-              ? process.env.EMBED_AUTHOR_ICON
-              : undefined,
-            process.env.EMBED_AUTHOR_LINK ? process.env.EMBED_AUTHOR_LINK : ''
-          )
+          .setAuthor({
+            name: 'AHC Info Center',
+            iconURL: process.env.EMBED_AUTHOR_ICON ?? '',
+            url: process.env.EMBED_AUTHOR_LINK ?? '',
+          })
       );
       this.colEmbeds.set(
         'My AHC Raffles',
         new MessageEmbed()
           .setColor('#4e0891')
           .setTitle('Your AHC Raffle Entries')
-          .setAuthor(
-            'AHC Info Center',
-            process.env.EMBED_AUTHOR_ICON
-              ? process.env.EMBED_AUTHOR_ICON
-              : undefined,
-            process.env.EMBED_AUTHOR_LINK ? process.env.EMBED_AUTHOR_LINK : ''
-          )
+          .setAuthor({
+            name: 'AHC Info Center',
+            iconURL: process.env.EMBED_AUTHOR_ICON ?? '',
+            url: process.env.EMBED_AUTHOR_LINK ?? '',
+          })
       );
 
       emitter.on('infoTopSalesAHC', async (interaction: ButtonInteraction) => {

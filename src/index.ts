@@ -9,6 +9,7 @@ import { Routes } from 'discord-api-types/v9';
 import * as DotEnv from 'dotenv';
 import Commands from '@/commands';
 import { EventEmitter } from 'events';
+import { dirname } from 'path';
 
 const OFFICER_ROLE_IDS = ['213484495100182528', '912176385349525534'];
 

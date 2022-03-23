@@ -22,13 +22,11 @@ export class CommandRaffles implements Command {
       const embed = new MessageEmbed()
         .setColor('#4e0891')
         .setTitle('AHC Raffle Status')
-        .setAuthor(
-          'AHC Info Center',
-          process.env.EMBED_AUTHOR_ICON
-            ? process.env.EMBED_AUTHOR_ICON
-            : undefined,
-          process.env.EMBED_AUTHOR_LINK ? process.env.EMBED_AUTHOR_LINK : ''
-        );
+        .setAuthor({
+          name: 'AHC Info Center',
+          iconURL: process.env.EMBED_AUTHOR_ICON ?? '',
+          url: process.env.EMBED_AUTHOR_LINK ?? '',
+        });
       if (user) {
         const discordMember = await interaction.guild?.members.fetch(user);
         if (discordMember) {
