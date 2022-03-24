@@ -56,11 +56,7 @@ const rest = new REST({ version: '9' }).setToken(botToken);
 // Create the Discord Client instance
 // ! IMPORTANT: All required intents must be specified or retrieving certain data will be impossible
 const client = new Client({
-  intents: [
-    Intents.FLAGS.GUILDS,
-    Intents.FLAGS.GUILD_MEMBERS,
-    Intents.FLAGS.GUILD_MESSAGES,
-  ],
+  intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MEMBERS],
 });
 
 // Notify when bot is connected
