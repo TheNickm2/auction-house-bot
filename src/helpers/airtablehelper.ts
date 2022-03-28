@@ -1,4 +1,4 @@
-import * as Airtable from 'airtable';
+import Airtable from 'airtable';
 import { Collection } from 'discord.js';
 
 export class AirtableHelper {
@@ -25,9 +25,9 @@ export class AirtableHelper {
   getRecordsByFormula(
     tableName: string,
     formula: string
-  ): Array<Airtable.Record<any>> | null {
+  ): Array<Airtable.Record<any>> | undefined {
     try {
-      const recordsList = [];
+      const recordsList: Array<Airtable.Record<any>> = [];
       this.AtInstance(tableName)
         .select({
           filterByFormula: formula,
@@ -47,12 +47,12 @@ export class AirtableHelper {
             if (recordsList.length > 0) {
               return recordsList;
             }
-            return null;
+            return;
           }
         );
     } catch (ex) {
       console.error(ex);
-      return null;
+      return;
     }
   }
 
